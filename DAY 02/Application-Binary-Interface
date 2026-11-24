@@ -1,53 +1,68 @@
 
-# RISC-V MYTH Workshop – Day 02
-## Application Binary Interface (ABI) and RISC-V Assembly Fundamentals
+# Day 02 – Application Binary Interface (ABI)
 
-This repository documents my learning and practical work from Day 02 of the RISC-V MYTH workshop.
+## RISC-V MYTH Workshop
 
-The focus is on understanding the RISC-V Application Binary Interface (ABI), integer register architecture, memory organization, load-store operations, and the conversion of C programs into RISC-V assembly and machine instructions.
+![RISC-V ABI](images/abi_overview.png)
 
----
+## 1. Overview
 
-## Objectives
+Day 02 of the RISC-V MYTH workshop focused on understanding the Application Binary Interface (ABI) and how software components communicate with the RISC-V processor.
 
-- Understand the purpose of the Application Binary Interface.
-- Explore RISC-V integer registers and their ABI names.
-- Understand memory organization and little-endian representation.
-- Learn basic load, add, and store instructions.
-- Compile C programs into RISC-V assembly.
-- Inspect generated instructions using RISC-V disassembly tools.
+The session explored the relationship between C programs, RISC-V registers, function calling conventions, stack organization, and assembly instructions.
+
+The practical exercises helped understand how function arguments are passed, how return values are handled, how registers are utilized, and how the stack supports function execution.
 
 ---
 
-## 1. Application Binary Interface (ABI)
+## 2. Topics Covered
 
-The Application Binary Interface defines the conventions that allow compiled software components to work together.
+- Introduction to Application Binary Interface (ABI)
+- RISC-V integer register architecture
+- Register naming conventions
+- Function calling conventions
+- Caller-saved and callee-saved registers
+- Function arguments and return values
+- Stack pointer and stack organization
+- Function call and return mechanism
+- C-to-RISC-V assembly understanding
+- Assembly and disassembly inspection
 
-It specifies:
+---
+
+## 3. Introduction to ABI
+
+ABI stands for Application Binary Interface.
+
+It defines the conventions that allow separately compiled software components to work together correctly.
+
+The ABI specifies:
+
 - Function argument passing.
-- Return-value conventions.
+- Return-value handling.
 - Register usage.
 - Stack organization.
-- Calling conventions.
+- Data type representation.
+- Function calling conventions.
 
-**ABI vs ISA**
+### ISA vs ABI
 
-- ISA defines the instructions supported by a processor.
-- ABI defines how software components interact when using that instruction set.
+| ISA | ABI |
+|---|---|
+| Instruction Set Architecture | Application Binary Interface |
+| Defines processor instructions | Defines software interaction conventions |
+| Specifies supported operations | Specifies calling and register conventions |
+| Hardware instruction interface | Binary software interface |
 
-### ABI Overview
-
-![ABI Overview](01_ABI_Introduction/images/abi_overview.png)
-
-![Software Stack](01_ABI_Introduction/images/software_stack.png)
-
-[Explore ABI Introduction](01_ABI_Introduction/README.md)
+![ABI Overview](images/abi_overview.png)
 
 ---
 
-## 2. RISC-V Register Architecture
+## 4. RISC-V Register Architecture
 
-RISC-V provides 32 integer registers in its base integer register set.
+RISC-V provides 32 integer registers, identified as x0 to x31.
+
+Each register also has an ABI name that indicates its conventional purpose.
 
 | Register | ABI Name | Purpose |
 |---|---|---|
@@ -58,172 +73,241 @@ RISC-V provides 32 integer registers in its base integer register set.
 | x4 | tp | Thread pointer |
 | x5-x7 | t0-t2 | Temporary registers |
 | x8-x9 | s0-s1 | Saved registers |
-| x10-x17 | a0-a7 | Function arguments |
+| x10-x17 | a0-a7 | Argument registers |
 | x18-x27 | s2-s11 | Saved registers |
 | x28-x31 | t3-t6 | Temporary registers |
 
-![RISC-V Register Map](02_RISCV_Register_Architecture/images/register_map.png)
+Important observations:
 
-![Register Comparison](02_RISCV_Register_Architecture/images/register_comparison.png)
+- x0 always contains zero.
+- ra stores the return address.
+- sp points to the current stack.
+- a0-a7 are used for function arguments.
+- a0-a1 are used for return values.
+- s-registers are preserved across function calls.
 
-[Explore Register Architecture](02_RISCV_Register_Architecture/README.md)
+![RISC-V Register Map](images/riscv_register_map.png)
 
----
+### Register Comparison
 
-## 3. Memory Organization
+The practical exercise involved observing register values and understanding their corresponding ABI names.
 
-RISC-V uses byte-addressable memory.
-
-In a little-endian system, the least significant byte is stored at the lowest memory address.
-
-Example:
-
-For the 32-bit value:
-
-`0x12345678`
-
-| Address | Stored Byte |
-|---|---|
-| A+0 | 0x78 |
-| A+1 | 0x56 |
-| A+2 | 0x34 |
-| A+3 | 0x12 |
-
-![Memory Layout](03_Memory_Organization/images/memory_layout.png)
-
-![Little Endian](03_Memory_Organization/images/little_endian.png)
-
-[Explore Memory Organization](03_Memory_Organization/README.md)
+![Register Values](images/register_values.png)
 
 ---
 
-## 4. Load, Add and Store Instructions
+## 5. RISC-V Calling Convention
 
-RISC-V follows a load-store architecture.
+The calling convention defines how a function receives arguments, returns results, and manages registers.
 
-- Load: transfers data from memory into a register.
-- Add: performs arithmetic using register values.
-- Store: transfers data from a register into memory.
+Under the standard RISC-V integer calling convention:
 
-Example RV64I instructions:
+- a0-a7 are used for passing integer arguments.
+- a0-a1 are used for returning values.
+- ra holds the return address.
+- sp maintains the stack pointer.
+- s0-s11 are callee-saved registers.
+- t0-t6 are temporary caller-saved registers.
 
-```asm
-ld  x8, 16(x23)
-add x8, x24, x8
-sd  x8, 8(x23)
-```
+### Caller-Saved Registers
 
-![Instruction Flow](04_Load_Add_Store_Instructions/images/instruction_flow.png)
+Caller-saved registers may be modified by the called function.
 
-![Instruction Execution](04_Load_Add_Store_Instructions/images/instruction_execution.png)
+The caller must preserve any values it needs after the function call.
 
-[Explore Load, Add and Store](04_Load_Add_Store_Instructions/README.md)
+### Callee-Saved Registers
+
+Callee-saved registers must be restored by the called function if it modifies them.
+
+![Calling Convention](images/calling_convention.png)
 
 ---
 
-## 5. C Program to RISC-V Assembly
+## 6. Stack Organization
 
-A C program can be compiled into RISC-V assembly using a RISC-V GCC toolchain.
+The stack is a memory region used during function execution.
 
-The practical workflow:
+It stores information such as:
 
-1. Write a C program.
-2. Compile it using RISC-V GCC.
-3. Generate assembly output.
-4. Generate an object file.
-5. Inspect machine instructions using objdump.
+- Saved registers.
+- Return addresses.
+- Local variables.
+- Temporary data.
 
-### Example
+The stack pointer (sp) identifies the current stack position.
+
+In the standard RISC-V ABI, the stack grows toward lower memory addresses and must be aligned to a 16-byte boundary at procedure entry.
+
+![Stack Frame](images/stack_frame.png)
+
+---
+
+## 7. Function Calling Mechanism
+
+A function call involves transferring control to another function and returning to the calling function after execution.
+
+The general sequence is:
+
+1. Pass arguments through argument registers.
+2. Save required registers if necessary.
+3. Execute the function.
+4. Place the return value in a0 or a0-a1.
+5. Restore saved registers.
+6. Return using the return address.
+
+![Function Call Flow](images/function_call_flow.png)
+
+---
+
+## 8. C Program and RISC-V Assembly
+
+A C function can be translated into RISC-V assembly using the GNU compiler toolchain.
+
+### Example C Program
 
 ```c
-#include <stdio.h>
+int add_numbers(int a, int b)
+{
+    return a + b;
+}
 
 int main(void)
 {
-    int i;
-    int sum = 0;
-    int n = 10;
-
-    for (i = 1; i <= n; i++)
-    {
-        sum += i;
-    }
-
-    printf("Sum = %d\n", sum);
-
-    return 0;
+    int result = add_numbers(10, 20);
+    return result;
 }
 ```
+
+The function receives two arguments and returns the result.
+
+According to the standard integer calling convention:
+
+- The first argument is passed in a0.
+- The second argument is passed in a1.
+- The result is returned in a0.
+
+### Example Assembly Instructions
+
+```asm
+add_numbers:
+    add a0, a0, a1
+    ret
+```
+
+This adds the values in a0 and a1 and places the result in a0.
+
+**Note:** This is an illustrative assembly example. Actual compiler-generated assembly may contain additional instructions depending on compiler options and target settings.
+
+---
+
+## 9. Compilation and Disassembly
+
+The GNU RISC-V compiler can generate assembly output from C source code.
 
 ### Generate Assembly
 
 ```bash
-riscv64-unknown-elf-gcc -S -O0 -march=rv64i -mabi=lp64 \
-code/sum1ton.c -o assembly/sum1ton.s
+riscv64-unknown-elf-gcc -S -O0 \
+-march=rv64i -mabi=lp64 \
+code/main.c -o assembly/main.s
 ```
 
 ### Generate Object File
 
 ```bash
-riscv64-unknown-elf-gcc -c -O0 -march=rv64i -mabi=lp64 \
-code/sum1ton.c -o assembly/sum1ton.o
+riscv64-unknown-elf-gcc -c -O0 \
+-march=rv64i -mabi=lp64 \
+code/main.c -o outputs/main.o
 ```
 
-### Disassemble
+### Inspect Disassembly
 
 ```bash
-riscv64-unknown-elf-objdump -d assembly/sum1ton.o \
-> disassembly/disassembly.txt
+riscv64-unknown-elf-objdump -d outputs/main.o
 ```
 
-![C Program](05_C_to_RISCV_Assembly/images/c_program.png)
+Save the output:
 
-![Compilation](05_C_to_RISCV_Assembly/images/compilation.png)
+```bash
+riscv64-unknown-elf-objdump -d outputs/main.o \
+> outputs/disassembly.txt
+```
 
-![Disassembly Output](05_C_to_RISCV_Assembly/images/disassembly_output.png)
+![Disassembly Output](images/disassembly_output.png)
 
-[Explore C to RISC-V Assembly](05_C_to_RISCV_Assembly/README.md)
-
----
-
-## 6. Learning Outcomes
-
-Through this practical session, I explored:
-
-- RISC-V ABI fundamentals.
-- Register naming and purpose.
-- Memory representation.
-- Little-endian byte ordering.
-- Load-store instruction behavior.
-- C-to-assembly compilation.
-- RISC-V disassembly using objdump.
-
-[View Learning Outcomes](07_Learning_Outcomes/README.md)
+**Note:** These commands assume the matching RV64 bare-metal compiler is installed. If you use a different compiler or ABI, adjust the target flags accordingly.
 
 ---
 
-## Tools Used
+## 10. Practical Work Summary
+
+| No. | Experiment / Concept | Status |
+|---|---|---|
+| 1 | Understanding Application Binary Interface | Completed |
+| 2 | RISC-V register architecture | Completed |
+| 3 | Register naming conventions | Practiced |
+| 4 | Function calling conventions | Practiced |
+| 5 | Caller-saved and callee-saved registers | Practiced |
+| 6 | Function arguments and return values | Practiced |
+| 7 | Stack organization | Practiced |
+| 8 | C-to-RISC-V assembly analysis | Practiced |
+| 9 | Object file and disassembly inspection | Practiced |
+
+*Update these statuses according to the exercises actually completed.*
+
+---
+
+## 11. Key Learnings
+
+Through the Day 02 practical session, I gained an understanding of:
+
+1. The purpose of the Application Binary Interface.
+2. The difference between ISA and ABI.
+3. RISC-V integer registers and their ABI names.
+4. Function argument and return-value conventions.
+5. Caller-saved and callee-saved registers.
+6. Stack pointer operation and stack organization.
+7. Function calling and return mechanisms.
+8. How C functions map to RISC-V assembly.
+9. Inspecting generated instructions using Objdump.
+
+---
+
+## 12. Conclusion
+
+Day 02 provided practical exposure to the RISC-V Application Binary Interface and its role in software execution.
+
+Understanding register conventions, function calling mechanisms, and stack management helped build a clearer connection between high-level C programs and low-level RISC-V assembly instructions.
+
+These concepts form an important foundation for understanding compiler output, processor execution, and embedded software development.
+
+---
+
+## Tools and Technologies
 
 - Ubuntu Linux
-- RISC-V GCC Toolchain
-- RISC-V GNU Binutils
-- Terminal commands
-
----
+- RISC-V GNU Compiler Toolchain
+- GNU Binutils
+- RISC-V Objdump
+- C Programming
+- RISC-V Assembly
 
 ## References
 
 - [RISC-V International](https://riscv.org/)
 - [RISC-V Specifications](https://riscv.org/technical/specifications/)
-- [RISC-V ABI Documentation](https://docs.riscv.org/reference/abi/)
+- [RISC-V ELF psABI Documentation](https://docs.riscv.org/reference/abi/)
 
 ---
 
 ## Author
 
-**G. Pravallika**  
+**G. Pravallika**
+
 B.Tech – Electronics and Communication Engineering
+
+**Training:** RISC-V / VLSI Design Training Program
 
 ---
 
-*This repository is maintained as a record of my RISC-V learning and practical exercises.*
+**Day 02 – Application Binary Interface**
