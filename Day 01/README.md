@@ -1,138 +1,336 @@
-# Day 01 – Introduction to RISC-V ISA
+# Day 1 – Introduction to RISC-V Architecture and GNU Compiler Toolchain
 
-## 1. Objective
+## 1. Introduction
 
-The objective of Day 01 is to understand the fundamentals of the RISC-V Instruction Set Architecture and the basic workflow used to compile, analyze, and execute RISC-V programs.
+RISC-V is an open-source Instruction Set Architecture (ISA) based on Reduced Instruction Set Computer (RISC) principles. It provides a simple, modular and extensible architecture for processor design.
 
-The session focuses on understanding the RISC-V ISA, registers, instructions, number representation, the RISC-V GNU toolchain, C-to-assembly conversion, compiler optimization, disassembly, and RISC-V simulation using Spike.
+The first day focused on understanding the software-to-hardware execution flow using C programs, GCC compiler, RISC-V cross compiler, object file generation, assembly-level code inspection and Spike simulation.
 
----
+The practical exercises helped in understanding how a C program is compiled into machine-level instructions and executed on a RISC-V architecture.
 
-## 2. Introduction to RISC-V
+## 2. Topics Covered
 
-RISC-V is an open standard Instruction Set Architecture based on the Reduced Instruction Set Computer (RISC) design philosophy. It defines the instructions and programmer-visible features that a processor supports.
+- Introduction to RISC-V Architecture
+- Understanding the compilation flow
+- C programming using Leafpad editor
+- GCC compilation and execution
+- RISC-V GNU Compiler Toolchain
+- RISC-V cross compilation
+- Object file generation
+- Understanding ELF file format
+- Assembly code generation and disassembly
+- Compiler optimization using `-O1` and `-Ofast`
+- Execution using Spike RISC-V ISA Simulator
+- Signed and unsigned integer representation
 
-An Instruction Set Architecture acts as an interface between software and hardware. Software generates instructions according to the ISA, and processor hardware implements those instructions.
+## 3. Tools and Environment
 
-RISC-V follows a modular architecture. It provides a basic integer instruction set and allows additional extensions to be included depending on the requirements of the processor.
+The following tools were used during the practical session.
 
-The open and modular nature of RISC-V makes it suitable for processor research, education, embedded systems, custom processor development, and hardware design.
+| Tool | Purpose |
+|---|---|
+| Ubuntu Linux | Operating system |
+| Oracle VirtualBox | Virtual machine environment |
+| Leafpad | C program editor |
+| GCC | C compiler |
+| RISC-V GCC | RISC-V cross compiler |
+| RISC-V Objdump | Disassembly of object files |
+| Spike | RISC-V instruction set simulator |
+| Proxy Kernel (pk) | Provides execution environment for Linux applications |
 
----
+## 4. Experiment 1 – C Program to Calculate Sum of Numbers from 1 to 100
 
-## 3. Instruction Set Architecture (ISA)
+### Objective
 
-An Instruction Set Architecture defines the operations that a processor can understand and execute.
+To write a C program that calculates the sum of integers from 1 to 100 using a `for` loop.
 
-The ISA specifies important processor features such as:
+### Source Code
 
-- Instruction set
-- Registers
-- Instruction formats
-- Data representation
-- Memory operations
-- Arithmetic and logical operations
-- Control-flow operations
+```c
+#include <stdio.h>
 
-The ISA defines **what** a processor can do, while the microarchitecture defines **how** those operations are implemented internally.
+int main() {
+    int i, sum = 0, n = 100;
 
-Therefore, different processors can implement the same RISC-V ISA while using different internal hardware structures.
+    for (i = 1; i <= n; ++i) {
+        sum += i;
+    }
 
----
+    printf("Sum of numbers from 1 to %d is %d\n", n, sum);
 
-## 4. RISC-V Architecture
-
-RISC-V follows the RISC design philosophy, where instructions are designed to be simple and regular.
-
-The architecture uses a load/store approach. Arithmetic and logical operations are generally performed using registers, while memory is accessed using load and store instructions.
-
-RISC-V provides different base architectures such as RV32 and RV64.
-
-The number indicates the width of the integer registers.
-
-For example:
-
-```text
-RV32 → 32-bit architecture
-RV64 → 64-bit architecture
+    return 0;
+}
 ```
 
-The base integer instruction set is represented by the letter `I`.
+### Compilation
 
-Additional extensions can be combined with the base ISA to provide additional functionality.
+The program was compiled using GCC.
 
----
-
-## 5. RISC-V Registers
-
-RISC-V provides 32 general-purpose integer registers identified as:
-
-```text
-x0 – x31
+```bash
+gcc sum1ton.c
 ```
 
-These registers are used to store operands, addresses, intermediate values, and results during program execution.
+### Execution
 
-Some important registers are:
-
-| Register | ABI Name | Purpose |
-|---|---|---|
-| x0 | zero | Constant zero |
-| x1 | ra | Return address |
-| x2 | sp | Stack pointer |
-| x3 | gp | Global pointer |
-| x4 | tp | Thread pointer |
-| x5–x7 | t0–t2 | Temporary registers |
-| x8–x9 | s0–s1 | Saved registers |
-| x10–x17 | a0–a7 | Arguments / return values |
-| x18–x27 | s2–s11 | Saved registers |
-| x28–x31 | t3–t6 | Temporary registers |
-
-The `x0` register is special because it always contains zero.
-
----
-
-## 6. RISC-V Instruction Formats
-
-RISC-V instructions are organized into different instruction formats.
-
-The major formats are:
-
-```text
-R-Type
-I-Type
-S-Type
-B-Type
-U-Type
-J-Type
+```bash
+./a.out
 ```
 
-### R-Type
-
-R-type instructions are mainly used for register-to-register operations.
-
-The instruction contains source registers, a destination register, opcode, and function fields.
+### Output
 
 ```text
-funct7 | rs2 | rs1 | funct3 | rd | opcode
+Sum of numbers from 1 to 100 is 5050
+```
+
+### Screenshot
+
+<img width="1920" height="923" alt="code" src="https://github.com/user-attachments/assets/36db5e18-1bec-48b0-ac0f-f2fd0fa1d63c" />
+
+
+<img width="1920" height="923" alt="ouput" src="https://github.com/user-attachments/assets/1bf07da0-7b4e-4d9b-8a7d-a4d333ae124a" />
+
+
+## 5. Experiment 2 – RISC-V Cross Compilation
+
+### Objective
+
+To cross-compile the C program for the RISC-V 64-bit architecture and generate a RISC-V object file.
+
+### Compilation Command
+
+```bash
+riscv64-unknown-elf-gcc -O1 -mabi=lp64 -march=rv64i -o sum1ton.o sum1ton.c
+```
+
+### Explanation of Compiler Options
+
+- `riscv64-unknown-elf-gcc` – RISC-V cross compiler.
+- `-O1` – Enables level 1 compiler optimization.
+- `-mabi=lp64` – Specifies the LP64 application binary interface.
+- `-march=rv64i` – Specifies the RV64I base integer instruction set.
+- `-o sum1ton.o` – Specifies the output filename.
+- `sum1ton.c` – Input C source file.
+
+### Generating Optimized Object File
+
+The program was also compiled using the `-Ofast` optimization option.
+
+```bash
+riscv64-unknown-elf-gcc -Ofast -mabi=lp64 -march=rv64i -o sum1ton.o sum1ton.c
+```
+
+### Checking the Generated File
+
+```bash
+ls -ltr sum1ton.o
+```
+
+### Checking File Format
+
+```bash
+file sum1ton.o
+```
+
+The generated file was identified as a 64-bit RISC-V ELF object file.
+
+### Screenshot
+
+
+
+## 6. Experiment 3 – Assembly Code Generation Using Objdump
+
+### Objective
+
+To understand how the C program is translated into RISC-V assembly instructions.
+
+### Disassembly Command
+
+```bash
+riscv64-unknown-elf-objdump -d sum1ton.o
+```
+
+The `objdump` utility is used to display the assembly instructions generated by the compiler.
+
+### Understanding the Disassembly
+
+The disassembly output contains:
+
+- Memory addresses
+- Machine instruction encodings
+- RISC-V assembly instructions
+- Function labels such as `main`
+- Branch and jump instructions
+
+### Important RISC-V Instructions Observed
+
+| Instruction | Description |
+|---|---|
+| `addi` | Add immediate |
+| `lui` | Load upper immediate |
+| `li` | Load immediate pseudo-instruction |
+| `bnez` | Branch if not equal to zero |
+| `jal` | Jump and link |
+| `ret` | Return from function |
+| `mv` | Move pseudo-instruction |
+
+### Viewing Disassembly Page by Page
+
+```bash
+riscv64-unknown-elf-objdump -d sum1ton.o | less
+```
+
+Press `q` to exit the output viewer.
+
+### Screenshots
+
+<img width="1920" height="1080" alt="1 1" src="https://github.com/user-attachments/assets/52d63fca-aeb4-4e01-b403-cab2e971c0d3" />
+<img width="1920" height="1080" alt="1 3" src="https://github.com/user-attachments/assets/1bba478e-1cc6-4537-a52e-7daec285420d" />
+
+
+## 7. Experiment 4 – Execution Using Spike Simulator
+
+### Objective
+
+To execute the RISC-V compiled program using the Spike instruction set simulator.
+
+Spike is a functional simulator that models the RISC-V instruction set architecture.
+
+### Execution Command
+
+```bash
+spike pk sum1ton.o
 ```
 
 Here:
 
-- `rs1` is the first source register.
-- `rs2` is the second source register.
-- `rd` is the destination register.
-- `opcode` identifies the instruction category.
-- `funct3` and `funct7` provide additional operation information.
+- `spike` – Starts the RISC-V simulator.
+- `pk` – Proxy Kernel.
+- `sum1ton.o` – RISC-V compiled program.
 
-### I-Type
+### Output
 
-I-type instructions contain an immediate value and are commonly used for immediate arithmetic and load operations.
+```text
+bbl loader
+Sum of numbers from 1 to 100 is 5050
+```
 
-### S-Type
+The output confirms that the RISC-V compiled program executes successfully in the Spike simulator.
 
-S-type instructions are mainly used for storing register data into memory.
+### Debugging Using Spike
 
-### B-Type
+The following command was also used to inspect program execution.
 
-B-type instructions are used for conditional branch operations and change the program
+```bash
+spike -d pk sum1ton.o
+```
+
+The Spike debug interface allows inspection of:
+
+- Program counter (PC)
+- Register values
+- Instruction execution
+- Step-by-step program flow
+
+Commands used inside the Spike debug interface:
+
+```text
+until pc 0 100b0
+reg 0 a2
+reg 0 sp
+q
+```
+
+### Screenshots
+
+<img width="1920" height="1080" alt="spike" src="https://github.com/user-attachments/assets/03a01047-9970-4490-829c-871dd8a9b80b" />
+
+<img width="1920" height="923" alt="code1 1" src="https://github.com/user-attachments/assets/4cb321a9-c1d3-4ff2-9fc3-5b152c0df41e" />
+<img width="1920" height="923" alt="code1 2" src="https://github.com/user-attachments/assets/352a1bf0-fd89-4bf6-b38a-93fee5690072" />
+
+
+## 8. Experiment 5 – Understanding Signed and Unsigned Integer Representation
+
+### Objective
+
+To explore the representation and range of signed and unsigned integer data types in C.
+
+### 8.1 Signed Integer Representation
+
+Signed integers represent both positive and negative values.
+
+For a signed integer with N bits, the two's complement range is:
+
+- Maximum value: 2^(N-1) - 1
+- Minimum value: -2^(N-1)
+
+The signed integer experiment explored the highest and lowest values represented by a 64-bit signed integer.
+
+**Source file:** `signedHighest.c`
+
+### Screenshot
+
+![Signed integer program](images/signed_integer_code.png)
+
+### 8.2 Unsigned Integer Representation
+
+Unsigned integers represent only non-negative values.
+
+For an unsigned integer with N bits, the range is:
+
+- Minimum value: 0
+- Maximum value: 2^N - 1
+
+The unsigned integer experiment explored the maximum value represented by an unsigned 64-bit integer.
+
+**Source file:** `unsignedHighest.c`
+
+### Screenshot
+
+<img width="1920" height="923" alt="unsigned-1" src="https://github.com/user-attachments/assets/f81d05ab-a586-44bc-a5d6-c3ad478911db" />
+<img width="955" height="910" alt="unsigned-2" src="https://github.com/user-attachments/assets/7d585e8f-6806-4eb5-8108-d18343892156" />
+<img width="1920" height="923" alt="unsigned2 1" src="https://github.com/user-attachments/assets/7ab5ea25-e110-4e7f-9f3b-d4f890fdd4ff" />
+
+
+
+## 9. Practical Work Summary
+
+| Experiment | Description | Status |
+|---|---|---|
+| 1 | C program to calculate sum from 1 to 100 | Completed |
+| 2 | GCC compilation and execution | Completed |
+| 3 | RISC-V cross compilation | Completed |
+| 4 | Object file generation | Completed |
+| 5 | Assembly code inspection using Objdump | Completed |
+| 6 | Spike simulation | Completed |
+| 7 | Spike debugging | Practiced |
+| 8 | Signed integer representation | Practiced |
+| 9 | Unsigned integer representation | Practiced |
+
+## 10. Key Learnings and Conclusion
+
+### Key Learnings
+
+Through the Day 1 practical session, I gained an understanding of:
+
+1. The basic concepts of RISC-V architecture.
+2. The process of compiling and executing C programs using GCC.
+3. The difference between native compilation and cross compilation.
+4. Generating RISC-V object files using the GNU compiler toolchain.
+5. Understanding ELF object files.
+6. Inspecting assembly instructions using Objdump.
+7. Understanding compiler optimization options such as `-O1` and `-Ofast`.
+8. Executing RISC-V programs using the Spike simulator.
+9. Debugging program execution by observing registers and the program counter.
+10. Understanding signed and unsigned integer representations.
+
+### Conclusion
+
+Day 1 provided practical exposure to the RISC-V GNU Compiler Toolchain and the basic software execution flow of a RISC-V processor.
+
+Starting from writing a C program, compiling it for the RISC-V architecture, examining the generated assembly instructions and executing it using the Spike simulator helped build a foundation for understanding processor architecture and low-level programming.
+
+---
+
+**Day 1 – Completed**
+
+**Training:** RISC-V / VLSI Design Training Program
