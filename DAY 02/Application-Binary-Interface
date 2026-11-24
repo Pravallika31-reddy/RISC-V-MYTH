@@ -1,29 +1,229 @@
-Day-02/
-│
-├── README.md
-│
-├── 01_ABI_Introduction/
-│   └── ABI_Explanation.md
-│
-├── 02_Register_Architecture/
-│   ├── Register_Mapping.md
-│   └── images/
-│
-├── 03_Memory_Organization/
-│   ├── Little_Endian.md
-│   └── images/
-│
-├── 04_Load_Add_Store/
-│   └── Instructions.md
-│
-├── 05_Lab_Execution/
-│   ├── C_Program/
-│   ├── Assembly/
-│   └── Disassembly/
-│
-├── 06_Verification_Flow/
-│   ├── Commands.md
-│   └── images/
-│
-└── 07_Results/
-    └── images/
+
+# RISC-V MYTH Workshop – Day 02
+## Application Binary Interface (ABI) and RISC-V Assembly Fundamentals
+
+This repository documents my learning and practical work from Day 02 of the RISC-V MYTH workshop.
+
+The focus is on understanding the RISC-V Application Binary Interface (ABI), integer register architecture, memory organization, load-store operations, and the conversion of C programs into RISC-V assembly and machine instructions.
+
+---
+
+## Objectives
+
+- Understand the purpose of the Application Binary Interface.
+- Explore RISC-V integer registers and their ABI names.
+- Understand memory organization and little-endian representation.
+- Learn basic load, add, and store instructions.
+- Compile C programs into RISC-V assembly.
+- Inspect generated instructions using RISC-V disassembly tools.
+
+---
+
+## 1. Application Binary Interface (ABI)
+
+The Application Binary Interface defines the conventions that allow compiled software components to work together.
+
+It specifies:
+- Function argument passing.
+- Return-value conventions.
+- Register usage.
+- Stack organization.
+- Calling conventions.
+
+**ABI vs ISA**
+
+- ISA defines the instructions supported by a processor.
+- ABI defines how software components interact when using that instruction set.
+
+### ABI Overview
+
+![ABI Overview](01_ABI_Introduction/images/abi_overview.png)
+
+![Software Stack](01_ABI_Introduction/images/software_stack.png)
+
+[Explore ABI Introduction](01_ABI_Introduction/README.md)
+
+---
+
+## 2. RISC-V Register Architecture
+
+RISC-V provides 32 integer registers in its base integer register set.
+
+| Register | ABI Name | Purpose |
+|---|---|---|
+| x0 | zero | Constant zero |
+| x1 | ra | Return address |
+| x2 | sp | Stack pointer |
+| x3 | gp | Global pointer |
+| x4 | tp | Thread pointer |
+| x5-x7 | t0-t2 | Temporary registers |
+| x8-x9 | s0-s1 | Saved registers |
+| x10-x17 | a0-a7 | Function arguments |
+| x18-x27 | s2-s11 | Saved registers |
+| x28-x31 | t3-t6 | Temporary registers |
+
+![RISC-V Register Map](02_RISCV_Register_Architecture/images/register_map.png)
+
+![Register Comparison](02_RISCV_Register_Architecture/images/register_comparison.png)
+
+[Explore Register Architecture](02_RISCV_Register_Architecture/README.md)
+
+---
+
+## 3. Memory Organization
+
+RISC-V uses byte-addressable memory.
+
+In a little-endian system, the least significant byte is stored at the lowest memory address.
+
+Example:
+
+For the 32-bit value:
+
+`0x12345678`
+
+| Address | Stored Byte |
+|---|---|
+| A+0 | 0x78 |
+| A+1 | 0x56 |
+| A+2 | 0x34 |
+| A+3 | 0x12 |
+
+![Memory Layout](03_Memory_Organization/images/memory_layout.png)
+
+![Little Endian](03_Memory_Organization/images/little_endian.png)
+
+[Explore Memory Organization](03_Memory_Organization/README.md)
+
+---
+
+## 4. Load, Add and Store Instructions
+
+RISC-V follows a load-store architecture.
+
+- Load: transfers data from memory into a register.
+- Add: performs arithmetic using register values.
+- Store: transfers data from a register into memory.
+
+Example RV64I instructions:
+
+```asm
+ld  x8, 16(x23)
+add x8, x24, x8
+sd  x8, 8(x23)
+```
+
+![Instruction Flow](04_Load_Add_Store_Instructions/images/instruction_flow.png)
+
+![Instruction Execution](04_Load_Add_Store_Instructions/images/instruction_execution.png)
+
+[Explore Load, Add and Store](04_Load_Add_Store_Instructions/README.md)
+
+---
+
+## 5. C Program to RISC-V Assembly
+
+A C program can be compiled into RISC-V assembly using a RISC-V GCC toolchain.
+
+The practical workflow:
+
+1. Write a C program.
+2. Compile it using RISC-V GCC.
+3. Generate assembly output.
+4. Generate an object file.
+5. Inspect machine instructions using objdump.
+
+### Example
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int i;
+    int sum = 0;
+    int n = 10;
+
+    for (i = 1; i <= n; i++)
+    {
+        sum += i;
+    }
+
+    printf("Sum = %d\n", sum);
+
+    return 0;
+}
+```
+
+### Generate Assembly
+
+```bash
+riscv64-unknown-elf-gcc -S -O0 -march=rv64i -mabi=lp64 \
+code/sum1ton.c -o assembly/sum1ton.s
+```
+
+### Generate Object File
+
+```bash
+riscv64-unknown-elf-gcc -c -O0 -march=rv64i -mabi=lp64 \
+code/sum1ton.c -o assembly/sum1ton.o
+```
+
+### Disassemble
+
+```bash
+riscv64-unknown-elf-objdump -d assembly/sum1ton.o \
+> disassembly/disassembly.txt
+```
+
+![C Program](05_C_to_RISCV_Assembly/images/c_program.png)
+
+![Compilation](05_C_to_RISCV_Assembly/images/compilation.png)
+
+![Disassembly Output](05_C_to_RISCV_Assembly/images/disassembly_output.png)
+
+[Explore C to RISC-V Assembly](05_C_to_RISCV_Assembly/README.md)
+
+---
+
+## 6. Learning Outcomes
+
+Through this practical session, I explored:
+
+- RISC-V ABI fundamentals.
+- Register naming and purpose.
+- Memory representation.
+- Little-endian byte ordering.
+- Load-store instruction behavior.
+- C-to-assembly compilation.
+- RISC-V disassembly using objdump.
+
+[View Learning Outcomes](07_Learning_Outcomes/README.md)
+
+---
+
+## Tools Used
+
+- Ubuntu Linux
+- RISC-V GCC Toolchain
+- RISC-V GNU Binutils
+- Terminal commands
+
+---
+
+## References
+
+- [RISC-V International](https://riscv.org/)
+- [RISC-V Specifications](https://riscv.org/technical/specifications/)
+- [RISC-V ABI Documentation](https://docs.riscv.org/reference/abi/)
+
+---
+
+## Author
+
+**G. Pravallika**  
+B.Tech – Electronics and Communication Engineering
+
+---
+
+*This repository is maintained as a record of my RISC-V learning and practical exercises.*
