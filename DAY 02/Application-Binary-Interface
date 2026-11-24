@@ -1,0 +1,29 @@
+Day-02/
+│
+├── README.md
+│
+├── 01_ABI_Introduction/
+│   └── ABI_Explanation.md
+│
+├── 02_Register_Architecture/
+│   ├── Register_Mapping.md
+│   └── images/
+│
+├── 03_Memory_Organization/
+│   ├── Little_Endian.md
+│   └── images/
+│
+├── 04_Load_Add_Store/
+│   └── Instructions.md
+│
+├── 05_Lab_Execution/
+│   ├── C_Program/
+│   ├── Assembly/
+│   └── Disassembly/
+│
+├── 06_Verification_Flow/
+│   ├── Commands.md
+│   └── images/
+│
+└── 07_Results/
+    └── images/
