@@ -86,15 +86,13 @@ Sum of numbers from 1 to 100 is 5050
 
 <img width="1920" height="923" alt="code" src="https://github.com/user-attachments/assets/36db5e18-1bec-48b0-ac0f-f2fd0fa1d63c" />
 
-
-<img width="1920" height="923" alt="ouput" src="https://github.com/user-attachments/assets/1bf07da0-7b4e-4d9b-8a7d-a4d333ae124a" />
-
-
 ## 5. Experiment 2 – RISC-V Cross Compilation
 
 ### Objective
 
 To cross-compile the C program for the RISC-V 64-bit architecture and generate a RISC-V object file.
+<img width="955" height="910" alt="risc" src="https://github.com/user-attachments/assets/cf5c4856-8414-476f-a5de-80de3dd657a8" />
+
 
 ### Compilation Command
 
@@ -135,6 +133,7 @@ The generated file was identified as a 64-bit RISC-V ELF object file.
 
 ### Screenshot
 
+![Uploading risc ofats.png…]()
 
 
 ## 6. Experiment 3 – Assembly Code Generation Using Objdump
