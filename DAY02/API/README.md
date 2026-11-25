@@ -349,7 +349,7 @@ Disassembly analysis helps identify:
 - Register usage.
 - Arithmetic and branch instructions.
 - The relationship between assembly code and machine code.
-- 
+
 
 ---
 <img width="1920" height="923" alt="VirtualBox_Risc-v_24_11_2026_11_54_51" src="https://github.com/user-attachments/assets/a039f87e-58ff-4578-9e8b-c645c573dd00" />
@@ -395,10 +395,63 @@ The following tools and technologies were used during the practical session:
 | Verilog HDL | Processor RTL exploration |
 | PicoRV32 | RISC-V processor implementation |
 
----
-##screenshots
--TESTBENCH
-<img width="955" height="910" alt="VirtualBox_Risc-v_24_11_2026_12_29_46" src="https://github.com/user-attachments/assets/c68979cc-2ec8-4a89-a1c6-c596c82f98cf" />
+## 6. Practical Execution and Results
+### 6.0 RISC-V Assembly Execution – Custom 1 to 9 Program
+
+A custom program was implemented by rewriting the C logic using RISC-V assembly language.
+
+The program demonstrates the interaction between C code and assembly routines and the execution of arithmetic operations using RISC-V instructions.
+
+**Program:** `1to9_custom.c`
+
+<img width="800" height="600" alt="VirtualBox_RISCV_25_11_2026_11_42_05" src="https://github.com/user-attachments/assets/d4574434-3428-4a97-ae99-0f8913575410" />
+
+
+
+### 6.1 RISC-V Assembly Program Execution
+
+The custom C program was rewritten using RISC-V assembly language. The program was compiled using the RISC-V GCC toolchain.
+
+### 6.2 RISC-V Assembly Disassembly
+
+Explored the generated assembly instructions and understood how C code is translated into RISC-V machine instructions.
+<img width="800" height="600" alt="VirtualBox_RISCV_25_11_2026_11_03_26" src="https://github.com/user-attachments/assets/7772c18e-2047-41f4-b712-8f8cda8c3dcb" />
+
+
+### 6.3 PicoRV32 RTL Source Code
+
+Explored the PicoRV32 Verilog RTL source code to understand the processor implementation.
+
+### 6.4 Firmware Hexadecimal File
+
+Generated and examined the firmware hexadecimal file.
+<img width="800" height="600" alt="VirtualBox_RISCV_25_11_2026_11_43_32" src="https://github.com/user-attachments/assets/b6889074-5e7b-45c7-a712-3c0c1deb532e" />
+
+
+### 6.5 32-bit Firmware Hexadecimal File
+
+Converted and examined the firmware in 32-bit hexadecimal format.
+
+<img width="800" height="600" alt="VirtualBox_RISCV_25_11_2026_11_53_40" src="https://github.com/user-attachments/assets/84a6f322-ba46-499a-be07-ec5d27aa10dc" />
+
+## 7. Key Learnings
+
+- Understood Application Binary Interface (ABI).
+- Learned RISC-V register architecture and ABI register names.
+- Studied caller-saved and callee-saved registers.
+- Understood little-endian and big-endian memory organization.
+- Learned RISC-V load and store instructions.
+- Studied RISC-V instruction formats.
+- Practiced writing RISC-V assembly programs.
+- Explored the compilation process using the RISC-V GCC toolchain.
+- Explored PicoRV32 RTL and firmware hexadecimal files.
+
+## 8. Conclusion
+
+Day 2 provided practical exposure to RISC-V assembly programming, ABI concepts, register architecture, memory organization and instruction formats.
+
+The session helped in understanding the relationship between C programming, assembly language, machine instructions and processor hardware through practical compilation and simulation exercises.
+
 
 
 
